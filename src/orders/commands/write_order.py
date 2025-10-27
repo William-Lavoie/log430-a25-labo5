@@ -116,7 +116,6 @@ def request_payment_link(order_id, total_amount, user_id):
       json=payment_transaction,
       headers={'Content-Type': 'application/json'}
     )
-    logger.info(response_from_payment_service)
 
     if response_from_payment_service.ok: # if response.ok
         print(f"ID paiement: {response_from_payment_service}")

@@ -13,53 +13,27 @@ En envoyant la requête à `POST http://localhost:8080/payments-api/payments` pa
 
 ![Question 1 image 1](./images/1.1.png)
 
-Le taux d'erreur est de 0 comme on peut le voir dans le graphique (la ligne orange représente le nombre d'erreurs) ainsi que dans la barre de navigation ou la pourcentage de requêtes ayant donné une erreur est affichée.
-
-![Question 1 image 2](./images/1.2.png)
-
 
 ### Question 2
-#### À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL) ? Illustrez votre réponse à l'aide des graphiques Locust.
-
-Comme on peut le voir dans le graphique suivant, le programme a arrêté de fonctionner lorsqu'il reçevait environ 65 requêtes par seconde. Avec 80 requêtes, le taux d'erreur est de 33%.
+#### Quel type d'information envoyons-nous dans la requête à POST payments/process/:id ? Est-ce que ce serait le même format si on communiquait avec un service SOA, par exemple ? Illustrez votre réponse avec des exemples et captures d'écran/terminal.
 
 ![Question 2 image 1](./images/2.1.png)
 
-À ce moment là, il y avait 175 utilisateurs sur l'application, c'est donc environ la limite actuelle.
-
-![Question 2 image 2](./images/2.2.png)
-
-Les messages d'erreur, trouvés dans l'onglet *Failures* sur Locust montre d'ailleurs que les erreurs sont dûes à la surcharge de MySQL, tel qu'attendu.
-
-![Question 2 image 3](./images/2.3.png)
-
-
 ### Question 3
-#### À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec MySQL + optimisation) ? Illustrez votre réponse à l'aide des graphiques Locust.
-
-Les données sont quasiment les mêmes que pour la question précédente, ce qui est cohérent puisque nous n'avons ajouté qu'une petite optimization. Le pourcentage d'erreur devient conséquent à partir de 175 utilisateurs, comme le démontre les images suivantes.
-
-![Question 3 image 1](./images/3.1.png)
-
-![Question 3 image 2](./images/3.2.png)
+#### Quel résultat obtenons-nous de la requête à POST payments/process/:id?
 
 
 ### Question 4
-#### À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis + optimisation) ? Quelle est la latence et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
+#### Quelle méthode avez-vous dû modifier dans log430-a25-labo05-payment et qu'avez-vous modifié ? Justifiez avec un extrait de code.
 
-L'application a cessé de répondre correctement à partir de 240 utilisateurs, au quel cas le taux d'erreur avait atteint 10%.
+J'ai modifié la méthode `update_status_to_paid` car c'est elle qui s'occupe de faire passer l'état des paiements à `is_valid = True`, donc il est logique que ce soit cette méthode qui appelle `store_manager` afin de transmettre cette information. J'ai ajouté la partie suivante à la méthode:
 
 ![Question 4 image 1](./images/4.1.png)
 
+Dans les logs de `store_manager`, on voit les lignes suivantes qui démontre que les commandes sont mises à jour correctement.
+
 ![Question 4 image 2](./images/4.2.png)
 
-![Question 4 image 3](./images/4.3.png)
-
-
-La latence moyenne, calculée pour 175 utilisateurs est de 9ms, ce qui une nette amélioration de la latence calculée avant les optimisations (près de 300% plus rapide que la valeur trouvée à la question 1).
-
-
-On remarque d'ailleurs que les erreurs notées dans l'onglet *Failures* concernent tous `/orders`, ce qui démontre que l'écriture vers la base de données est maintenant le *bottleneck* puisque les autres fonctions testées utilisent Redis.
 
 
 ### Question 5
