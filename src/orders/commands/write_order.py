@@ -112,12 +112,14 @@ def request_payment_link(order_id, total_amount, user_id):
         "total_amount": total_amount
     }
 
-    # TODO: Requête à POST /payments
-    print("")
-    response_from_payment_service = {}
+    response_from_payment_service = requests.post('http://api-gateway:8080/payments-api/payments',
+      json=payment_transaction,
+      headers={'Content-Type': 'application/json'}
+    )
+    logger.info(response_from_payment_service)
 
-    if True: # if response.ok
-        print(f"ID paiement: {payment_id}")
+    if response_from_payment_service.ok: # if response.ok
+        print(f"ID paiement: {response_from_payment_service}")
 
     return f"http://api-gateway:8080/payments-api/payments/process/{payment_id}" 
 
