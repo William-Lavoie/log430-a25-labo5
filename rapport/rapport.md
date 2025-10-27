@@ -37,12 +37,16 @@ Dans les logs de `store_manager`, on voit les lignes suivantes qui démontre que
 
 
 ### Question 5
-#### À partir de combien d'utilisateurs votre application cesse-t-elle de répondre correctement (avec Redis + Optimisation + Nginx load balancing) ? Quelle est la latence moyenne (50ème percentile) et le taux d'erreur observés ? Illustrez votre réponse à l'aide des graphiques Locust.
-L'application a cessé de fonctionner avec un pourcentage d'erreur de 13% à partir de 245 utilisateurs. 
+#### À partir de combien de requêtes par minute observez-vous les erreurs 503 ? Justifiez avec des captures d'écran de Locust.
+
+Les erreurs 503 commencent à partir de 2 RPS comme on peut le voir ci-dessous.
 
 ![Question 5 image 1](./images/5.1.png)
 
+Ceci est dû au fait que la configuration du `endpoint` dans krakenD permet 10 requêtes par minute, cependant krakenD converti en requête par seconde, ce qui revient à 1.6 de permise, ainsi, il peut y avoir maximum 10 requêtes par minute, et au plus une par seconde. 
+
 ![Question 5 image 2](./images/5.2.png)
+
 
 Le nombre d'utilisateurs maximum n'a essentiellement pas changé avec l'introduction de Nginx, ce qui était attendu car le *bottleneck* est MySQL, or les 3 instances de `store_manager` utilisent toute la même base de données, ainsi le nombre de requêtes envoyé à MySQL n'a pas changé.
 Par contre, la latence a augmenté car le traffic est partagé par les instances de `store_manager`. La latence moyenne est maintenant de 5ms.
