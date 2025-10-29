@@ -55,25 +55,9 @@ Par contre, la latence a augmenté car le traffic est partagé par les instances
 
 
 ### Question 6
-#### Avez-vous constaté une amélioration des performances à mesure que nous avons mis en œuvre différentes approches d'optimisation ? Quelle a été la meilleure approche ? Justifiez votre réponse en vous référant aux réponses précédentes.
+#### Que se passe-t-il dans le navigateur quand vous faites une requête avec un délai supérieur au timeout configuré (5 secondes) ? Quelle est l'importance du timeout dans une architecture de microservices ? Justifiez votre réponse avec des exemples pratiques.
 
-|                | Nombre Utilisateurs | Taux Erreur (%) | Latence (ms) |
-|----------------|--------------------|-------------|---------|
-| **MySQL**     |           100         |     0        |     26    |
-| **MySQL + optimisation**      |       175             |       10      |   N/A     |   
-| **Redis + optimisation**      |       240             |     10        |     9    |
-|**Redis + Optimisation + Nginx load balancing**              |     245              |     13          |   5    |
-
-Selon la table ci-dessus, formée à partir des données trouvées pour les questions 1-5, on voit que les performances ont amélioré avec chacun des changements. La latence moyenne a diminiué d'environ 500% et le nombre d'utilisateurs maximum a augmenté de 140% (175 à 245, en sachant que nous ne savons pas le nombre maximum pour le premier cas, je ne l'ai donc pas pris en compte.)
-
-On voit également que la meilleure approche a été la dernière, tel qu'attendu. Le plus grand problème quant à la performance suite à ces changements est lié à la base de données MySQL. Pour améliorer davantage les performances, on pourrait utiliser plusieurs techniques tel que le *connection pooling*, améliorer l'indexage sur la BD ou bien encore faire des requêtes asynchrones à l'aide d'un outil comme `Celery`.
-
-
-### Question 7
-#### Dans le fichier nginx.conf, il existe un attribut qui configure l'équilibrage de charge. Quelle politique d'équilibrage de charge utilisons-nous actuellement ? Consultez la documentation officielle Nginx si vous avez des questions.
-
-L'attribut en question est `least_conn` qui indique que les requêtes sont acheminés vers le serveur avec la plus petite charge. On peut lire sous la documentation Nginx l'explication suivante: 
-`least-connected — next request is assigned to the server with the least number of active connections` (https://nginx.org/en/docs/http/load_balancing.html). 
+On obtient une erreur 500 ce qui signifie que le serveur a rencontré une erreur. Cela est causée par le timeout configuré dans KrakenD. Le but de mettre un timeout est d'éviter un "callback hell", soit d'attendre une requête qui ne viendra jamais. Par exemple, dans le cadre d'une architecture microservices il est possible qu'un service ne fonctionne plus, ainsi si les autres services l'appellent ils ne reçevront jamais de réponse, il est donc essentiel de détermine un temps d'attente maximum.
 
 ## Observations additionnelles
 

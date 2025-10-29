@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Creer fichier .env
+        run: |
+          echo "DB_HOST=mysql" >> .env
+          echo "DB_PORT=3306" >> .env
+          echo "DB_NAME=labo05_db" >> .env
+          echo "DB_USER=labo05" >> .env
+          echo "DB_PASS=labo05" >> .env
+          echo "REDIS_HOST=redis" >> .env
+          echo "REDIS_PORT=6379" >> .env
+          echo "REDIS_DB=0" >> .env
+
+      - name: Créer image et réseau Docker
+        run: |
+          docker network create labo05-network
+          docker compose build
+
+      - name: Démarrer les services avec Docker
+        run: docker compose up -d
+
+      - name: Run tests
+        working-directory: src
+        run: docker compose exec store_manager python -m pytest --disable-warnings
+
+  deploy:
+      needs: test
+      runs-on: self-hosted
+
+      steps:
+        - name: Fix workspace permissions
+          run: sudo chown -R log430:log430 ${{ github.workspace }} && sudo chmod -R u+rwX ${{ github.workspace }}
+
+        - name: Checkout code
+          uses: actions/checkout@v4
+
+        - name: Mettre le repo à jour
+          shell: bash
+          env:
+            GITHUB_REPOSITORY: ${{ github.repository }}
+          run: |
+            set -euo pipefail
+            REPO_NAME=$(basename "$GITHUB_REPOSITORY")
+            cd ~
+            if [ ! -d "$REPO_NAME" ]; then
+              git clone https://x-access-token:${{ secrets.TOKEN }}@github.com/${GITHUB_REPOSITORY}.git "$REPO_NAME"
+            fi
+            cd "$REPO_NAME"
+            git fetch --all --prune
+            git checkout main
+            git pull --ff-only
+
+        - name: Créer fichier .env et déployer l'app
+          run: |
+            echo "DB_HOST=mysql" > .env
+            echo "DB_PORT=3306" >> .env
+            echo "DB_NAME=labo05_db" >> .env
+            echo "DB_USER=labo05" >> .env
+            echo "DB_PASS=labo05" >> .env
+            echo "REDIS_HOST=redis" >> .env
+            echo "REDIS_PORT=6379" >> .env
+            echo "REDIS_DB=0" >> .env
+
+            REPO_NAME=$(basename "$GITHUB_REPOSITORY")
+            cp .env ~/"$REPO_NAME"/.env
+
+            docker compose down -v
+            docker network rm labo05-network || true
+
+            docker network create labo05-network
+            docker compose build --no-cache
+            docker compose up -d --remove-orphans
+            docker image prune -f
+            docker container prune -f
+            docker volume prune -f
+            docker network prune -f
+            docker builder prune -af
