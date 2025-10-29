@@ -38,6 +38,15 @@ jobs:
       - name: Démarrer les services avec Docker
         run: docker compose up -d
 
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if docker compose exec -T mysql mysqladmin ping -h localhost -u root -proot --silent; then
+              break
+            fi
+            sleep 2
+          done
+
       - name: Run tests
         working-directory: src
         run: docker compose exec store_manager python -m pytest --disable-warnings
