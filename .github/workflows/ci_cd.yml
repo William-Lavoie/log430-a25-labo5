@@ -93,9 +93,9 @@ jobs:
             cp .env ~/"$REPO_NAME"/.env
 
             docker compose down -v
-            docker network rm labo05-network || true
-
-            docker network create labo05-network
+            if ! docker network ls --format '{{.Name}}' | grep -w labo05-network; then
+              docker network create labo05-network
+            fi
             docker compose build --no-cache
             docker compose up -d --remove-orphans
             docker image prune -f

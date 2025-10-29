@@ -1,5 +1,5 @@
-[![CI](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml)
-[![CI](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml)
+[![CI/CD](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml)
+
 
 # Labo 05 – Microservices, SOA, SBA, API Gateway, Rate Limit & Timeout
 
