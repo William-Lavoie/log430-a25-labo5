@@ -1,3 +1,6 @@
+[![CI](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml)
+[![CI](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml/badge.svg)](https://github.com/William-Lavoie/log430-a25-labo5/actions/workflows/ci_cd.yml)
+
 # Labo 05 – Microservices, SOA, SBA, API Gateway, Rate Limit & Timeout
 
 <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Ets_quebec_logo.png" width="250">    
